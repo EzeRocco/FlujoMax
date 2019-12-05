@@ -59,39 +59,8 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
     current->siguiente = corr;
     return lista;
   }
-    
-    //si no lo encontramos al nodo origen donde guardaremos los datos,
-    //cortamos la ejecucion.
-    //~ else{
-      //~ printf("\n el nodo llamado %s no se encontro en la lista",origen);
-      //~ printf("\nERROR: FIN DE LA EJECUCION"); 
-      //~ exit(1);
-    //~ }
   return lista;
 }
-
-//~ LNodo crea_nodo(LNodo lista, void* dato, int funSum ){
-  //~ Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
-  //~ assert(conexion);
-  //~ conexion->conex = dato;
-  //~ conexion->sig = NULL;
-  //~ conexion->cor = NULL;
-  //~ (funSum == 1) ? (conexion->fuente = 1) : (conexion->fuente = 0); //si se pasa un uno(que significa que es una fuente) se marca a la fuente con uno.
-  //~ (funSum == 2) ? (conexion->sum = 1) : (conexion->sum = 0);
-  //~ if((funSum != 1) && (funSum != 2)){
-    //~ conexion->fuente = 0;
-    //~ conexion->sum = 0;
-  //~ } 
-  
-  //~ if(lista == NULL){
-    //~ return conexion;
-  //~ }
-
-  //~ LNodo nueva = lista;
-  //~ for(;nueva->sig != NULL; nueva = nueva->sig);
-  //~ nueva->sig = conexion;
-  //~ return lista;
-//~ }
 
 LNodo crea_nodo_ini(LNodo lista,void* dato, int funSum) {
   Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
