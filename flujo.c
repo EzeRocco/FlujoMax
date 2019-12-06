@@ -15,6 +15,7 @@ typedef struct nodo {
 
 typedef struct corriente{
   struct nodo *destino; //conexion a donde va ir la corriente
+  int capacidadOriginal;
   int capacidadMax; //capacidad Maxima de la conexion
   int capEnv; // capacidad que se envia(todos comienzan en cero)
   struct corriente *siguiente;
@@ -40,7 +41,8 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
   for(;ramas != NULL; ramas = ramas->sig){
     if (strcmp(ramas->conex, llegada) == 0) corr->destino = ramas;
   }
-  corr->capacidadMax = cap;
+  corr->capacidadOriginal = cap;
+  corr->capacidadMax = corr->capacidadOriginal;
   corr->capEnv = 0;
   corr->siguiente = NULL;
   //ahora guardaremos la conexion en el nodo correspondiente
@@ -59,8 +61,39 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
     current->siguiente = corr;
     return lista;
   }
+    
+    //si no lo encontramos al nodo origen donde guardaremos los datos,
+    //cortamos la ejecucion.
+    //~ else{
+      //~ printf("\n el nodo llamado %s no se encontro en la lista",origen);
+      //~ printf("\nERROR: FIN DE LA EJECUCION"); 
+      //~ exit(1);
+    //~ }
   return lista;
 }
+
+//~ LNodo crea_nodo(LNodo lista, void* dato, int funSum ){
+  //~ Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
+  //~ assert(conexion);
+  //~ conexion->conex = dato;
+  //~ conexion->sig = NULL;
+  //~ conexion->cor = NULL;
+  //~ (funSum == 1) ? (conexion->fuente = 1) : (conexion->fuente = 0); //si se pasa un uno(que significa que es una fuente) se marca a la fuente con uno.
+  //~ (funSum == 2) ? (conexion->sum = 1) : (conexion->sum = 0);
+  //~ if((funSum != 1) && (funSum != 2)){
+    //~ conexion->fuente = 0;
+    //~ conexion->sum = 0;
+  //~ } 
+  
+  //~ if(lista == NULL){
+    //~ return conexion;
+  //~ }
+
+  //~ LNodo nueva = lista;
+  //~ for(;nueva->sig != NULL; nueva = nueva->sig);
+  //~ nueva->sig = conexion;
+  //~ return lista;
+//~ }
 
 LNodo crea_nodo_ini(LNodo lista,void* dato, int funSum) {
   Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
@@ -178,6 +211,26 @@ LNodo toma_datos(char* nameFile,LNodo lista){
   return list;
 }
 
+void generar_archivo(LNodo lista,TFlujo flujoTot,char*nombreArchivo){
+  FILE* archivo;
+  if(!(archivo = fopen(nombreArchivo,"w"))) {
+    printf("ERROR al abrir el archivo camino");
+    exit(1);
+  }
+  fprintf(archivo,"Flujo maximo:\n%d\nFlujos\n",flujoTot->flujoTotal);
+  LNodo nods = lista;
+  for(;nods != NULL; nods = nods->sig){
+    if(nods->cor != NULL){
+      TipCor cur = nods->cor;
+      for(;cur != NULL; cur = cur->siguiente){
+        fprintf(archivo,"%s,%s,%d,%d\n",nods->conex,cur->destino->conex,cur->capacidadOriginal,cur->capEnv);
+      }
+    }
+  }
+  fclose(archivo);
+}
+
+//--------------------------impresion-----------------------------------
 void imprime_nodos (LNodo lista){
   LNodo nod = lista;
   for(;nod != NULL; nod = nod->sig){
@@ -207,15 +260,15 @@ void imprime_conexiones(LNodo lista,char* conexion){
 
 int minimo_elem(int* arreglo,int cant){
   int minimo = arreglo[0];
-  printf("\n\nelemento es %d",arreglo[0]);
+  //printf("\n\nelemento es %d",arreglo[0]);
   for(int i = 1; i < cant; i++){
-    printf("\nelemento es %d",arreglo[i]);
+    //printf("\nelemento es %d",arreglo[i]);
     if(arreglo[i] < minimo){
-      printf("\n%d es menor que %d",arreglo[i],minimo);
+      //printf("\n%d es menor que %d",arreglo[i],minimo);
       minimo = arreglo[i];
     }
   }
-  printf("\n el minimo es %d",minimo);
+  //printf("\n el minimo es %d",minimo);
   return minimo;
 }
 
@@ -224,7 +277,7 @@ int min(LNodo lista){
   int menor = corrientes->capacidadMax;
   for(;corrientes!= NULL; corrientes = corrientes->siguiente){
     if((corrientes->capacidadMax > menor) && (corrientes->capacidadMax != 0)) {
-      printf("\nel nodo mas chico es: %d",corrientes->capacidadMax);
+      //printf("\nel nodo mas chico es: %d",corrientes->capacidadMax);
       menor = corrientes->capacidadMax;
     }
   }
@@ -233,11 +286,11 @@ int min(LNodo lista){
 }
 ///INCOMPLETA
 int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
-  printf("\n\nnodo inicial es: %s",lista->conex);
+  //printf("\n\nnodo inicial es: %s",lista->conex);
   int minimo = min(lista);
   int flujo = 0;
   if(minimo == -1){
-    printf("\n no tiene mas nodos con capacidad");
+    //printf("\n no tiene mas nodos con capacidad");
     lista->cerrado = 1;
     return -1;
   }
@@ -245,42 +298,42 @@ int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
   TipCor conectado = lista->cor;
   for(;((conectado != NULL) && (conectado->capacidadMax != minimo));conectado = conectado->siguiente);
    
-  printf("\naccedemos al nodo %s ya que tiene la mayor capacidad, la capacidad es %d",conectado->destino->conex,minimo);
-  printf("\nITERADOR: %d",iter);
+  //printf("\naccedemos al nodo %s ya que tiene la mayor capacidad, la capacidad es %d",conectado->destino->conex,minimo);
+  //printf("\nITERADOR: %d",iter);
   capacidades[iter] = conectado->capacidadMax;
-  printf("\nARREGLO: %d",capacidades[iter]);
+  //printf("\nARREGLO: %d",capacidades[iter]);
   iter++;
   if(conectado->destino->sum == 1){
-    printf("\nllegamos al nodo final");
-    printf("\n\nTOTAL DE ITERACIONES: %d",iter);
+    //printf("\nllegamos al nodo final");
+    //printf("\n\nTOTAL DE ITERACIONES: %d",iter);
     flu->minimizador = minimo_elem(capacidades,iter); 
-    printf("\n EL MINIMIZADOR ES %d",flu->minimizador);
+    //printf("\n EL MINIMIZADOR ES %d",flu->minimizador);
     flu->flujoTotal = (flu->flujoTotal) + (flu->minimizador);
-    printf("\nla capacidad maxima del nodo %s es %d y su minimo es %d",conectado->destino->conex,conectado->capacidadMax,flu->minimizador);
+    //printf("\nla capacidad maxima del nodo %s es %d y su minimo es %d",conectado->destino->conex,conectado->capacidadMax,flu->minimizador);
     conectado->capacidadMax = (conectado->capacidadMax) - (flu->minimizador);
-    printf("\nahora la capacidad queda en: %d",conectado->capacidadMax);
+    //printf("\nahora la capacidad queda en: %d",conectado->capacidadMax);
     conectado->capEnv = (conectado->capEnv) + (flu->minimizador);
     return flujo = flu->minimizador;
   }
         
   else if(conectado->destino->sum != 1){
     LNodo conexion = conectado->destino;
-    printf("\n el destino es # %s",conexion->conex);
+    //printf("\n el destino es # %s",conexion->conex);
     flujo = flujo_Max(conexion,flu,capacidades,iter);
-    printf("\nvolvemos al nodo : #%s",lista->conex);
+    //printf("\nvolvemos al nodo : #%s",lista->conex);
 
     if(flujo == -1){
-      printf("\n entramos en zona -1");
+      //printf("\n entramos en zona -1");
       for(;((conectado != NULL));conectado = conectado->siguiente){
         if(conectado->destino->cerrado != 1){
           LNodo conexion2 = conectado->destino;
           capacidades[iter - 1] =conectado->capacidadMax;
           flujo = flujo_Max(conexion2,flu,capacidades,iter);
-          printf("\nQUIERO SABER EL FLUJO: %d",flujo);
+          //printf("\nQUIERO SABER EL FLUJO: %d",flujo);
         }
       if(flujo != -1){ //si tengo minimizador hago las operaciones correspondientes
         conectado->capacidadMax = (conectado->capacidadMax) - flujo;
-        printf("\n \nahora la capacidad queda en: %d",conectado->capacidadMax);
+        //printf("\n \nahora la capacidad queda en: %d",conectado->capacidadMax);
         conectado->capEnv = (conectado->capEnv) + flujo;
         return flujo;
     }
@@ -288,7 +341,7 @@ int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
     }
     else if(flujo != -1){ //si tengo minimizador hago las operaciones correspondientes
       conectado->capacidadMax = (conectado->capacidadMax) - flujo;
-      printf("\n \nahora la capacidad queda en: %d",conectado->capacidadMax);
+      //printf("\n \nahora la capacidad queda en: %d",conectado->capacidadMax);
       conectado->capEnv = (conectado->capEnv) + flujo;
     }
       //~ if(conexion->cerrado == 1) return -1;
@@ -297,7 +350,7 @@ int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
   }
 
   if((lista->fuente == 1) && (flujo != -1)){
-    printf("\n\nLLEGAMOS AL NODO INICIAL");
+    //printf("\n\nLLEGAMOS AL NODO INICIAL");
     imprime_conexiones(lista,"1");
     flujo = flujo_Max(lista,flu,capacidades,0);
   }
@@ -312,26 +365,27 @@ int main()
   LNodo nuevo = NULL;
   TFlujo fl = crea_tipo_flujo();
   //~ nuevo = crea_nodo_ini(nuevo,"1",1);
-  //~ imprime_nodos (nuevo);
+  // imprime_nodos (nuevo);
   //~ nuevo = crea_nodo_ini(nuevo,"2",0);
   //~ nuevo = crea_nodo_ini(nuevo,"3",2);
 
   nuevo = toma_datos("fuentes.txt",nuevo);
   //nuevo = crea_corriente(nuevo,"1","2",5);
   //printf("\n%s",nuevo->cor->destino->conex);
-  //imprime_nodos(nuevo);
+  imprime_nodos(nuevo);
   //~ nuevo = crea_corriente(nuevo,"1","2",5);
   //~ nuevo = crea_corriente(nuevo,"1","3",5);
   imprime_conexiones(nuevo,"1");
   imprime_conexiones(nuevo,"3");
   int arreglo[10];
   LNodo conexiones = nuevo;
-  for(;conexiones != NULL; conexiones = conexiones->sig){
+  for(;conexiones != NULL ; conexiones = conexiones->sig){
     if(conexiones->fuente == 1){
       flujo_Max(conexiones,fl,arreglo,0);
     }
   }
-  printf("\nEL FLUJO MAXIMO ES: %d",fl->flujoTotal);
+  //printf("\nEL FLUJO MAXIMO ES: %d",fl->flujoTotal);
+  generar_archivo(nuevo,fl,"salida.txt");
   return 0;
 }
 
