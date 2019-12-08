@@ -59,6 +59,7 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
       //puntero que nos conectara al otro nodo de llegada. 
   if(strcmp(list->conex, origen) == 0){
     if (list->cor == NULL) {
+      corr->siguiente = NULL;
       list->cor = corr;
       return lista;
     }
