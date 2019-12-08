@@ -1,0 +1,16 @@
+Fuente
+Pe
+Sumidero
+Ult
+Puntos Intermedios
+loas,bacas,cas,das
+Conexiones
+Pe,loas,10
+Pe,cas,10
+loas,bacas,4
+loas,cas,2
+loas,das,8
+bacas,Ult,10
+cas,das,9
+das,bacas,6
+das,Ult,10

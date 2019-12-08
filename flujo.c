@@ -32,7 +32,12 @@ typedef struct _fl{
 typedef Flujo *TFlujo;
 
 //---------------------------------------------------------------------
-
+//~ crea_corriente: LNodo -> void* -> void* -> int -> LNodo
+//~ la funcion crea_corriente toma una lista de LNodo(donde ya se encuentran todos los nodos)
+//~ dos void*(que pueden ser char*),uno origen donde nos podra ayudar a identificar el nodo a donde
+//~ se va a guardar la adyacencia , y otro de llegada donde podremos identificar a donde podra acceder
+//~ esa adyacencia,por ultimo un entero con la capacidad que que guardara en capacidadOriginal.La funcion
+//~ nos devolvera la lista pero ahora con la adyacencia ya guardada en la lista. 
 LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
   Corriente* corr = malloc(sizeof(Corriente) + 1);
   assert(corr);
@@ -42,7 +47,8 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
     if (strcmp(ramas->conex, llegada) == 0) corr->destino = ramas;
   }
   corr->capacidadOriginal = cap;
-  corr->capacidadMax = corr->capacidadOriginal;
+  corr->capacidadMax = corr->capacidadOriginal; //guardaremos lo mismo que esta en corr->capacidadOriginal ya que los dos
+//                                                empezaran con la misma capacidad
   corr->capEnv = 0;
   corr->siguiente = NULL;
   //ahora guardaremos la conexion en el nodo correspondiente
@@ -61,46 +67,24 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
     current->siguiente = corr;
     return lista;
   }
-    
-    //si no lo encontramos al nodo origen donde guardaremos los datos,
-    //cortamos la ejecucion.
-    //~ else{
-      //~ printf("\n el nodo llamado %s no se encontro en la lista",origen);
-      //~ printf("\nERROR: FIN DE LA EJECUCION"); 
-      //~ exit(1);
-    //~ }
   return lista;
 }
 
-//~ LNodo crea_nodo(LNodo lista, void* dato, int funSum ){
-  //~ Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
-  //~ assert(conexion);
-  //~ conexion->conex = dato;
-  //~ conexion->sig = NULL;
-  //~ conexion->cor = NULL;
-  //~ (funSum == 1) ? (conexion->fuente = 1) : (conexion->fuente = 0); //si se pasa un uno(que significa que es una fuente) se marca a la fuente con uno.
-  //~ (funSum == 2) ? (conexion->sum = 1) : (conexion->sum = 0);
-  //~ if((funSum != 1) && (funSum != 2)){
-    //~ conexion->fuente = 0;
-    //~ conexion->sum = 0;
-  //~ } 
-  
-  //~ if(lista == NULL){
-    //~ return conexion;
-  //~ }
-
-  //~ LNodo nueva = lista;
-  //~ for(;nueva->sig != NULL; nueva = nueva->sig);
-  //~ nueva->sig = conexion;
-  //~ return lista;
-//~ }
+//~ crea_nodo_ini: LNodo -> void* -> int -> LNodo
+//~ la funcion crea_nodo_ini toma una lista de tipo LNodo, un void* con el dato(nombre de la conexion)
+//~ que sera agregado a la lista, y un entero que nos ayudara a identificar si es la fuente o el sumidero
+//~ o si no es de ninuno de los dos. La funcion nos devolvera la lista pero ahora con este nuevo nodo agre-
+//~ gado al principio de la lista. 
 
 LNodo crea_nodo_ini(LNodo lista,void* dato, int funSum) {
   Nodo* conexion = malloc(sizeof(Nodo)); //creamos una conexion nueva
   assert(conexion);
   conexion->conex = dato;
-  (funSum == 1) ? (conexion->fuente = 1) : (conexion->fuente = 0); //si se pasa un uno(que significa que es una fuente) se marca a la fuente con uno.
+  //si funSum es uno(que significa que es una fuente) se marca a la fuente con uno.
+  (funSum == 1) ? (conexion->fuente = 1) : (conexion->fuente = 0);
+  //si funSum es dos el sumidero se marca en uno,sino se marca en cero.
   (funSum == 2) ? (conexion->sum = 1) : (conexion->sum = 0);
+  //si funSum no es ni uno ni dos ,la fuente como el sumidero se marcaran en cero.
   if((funSum != 1) && (funSum != 2)){
     conexion->fuente = 0;
     conexion->sum = 0;
@@ -110,6 +94,10 @@ LNodo crea_nodo_ini(LNodo lista,void* dato, int funSum) {
   conexion->sig = lista;
   return conexion;
 }
+
+//~ crea_tipo_flujo: void -> TFlujo
+//~ la funcion crea_tipo_flujo nos inicializa la estructura Flujo con sus valores
+//~ en cero.
 
 TFlujo crea_tipo_flujo(){
   Flujo* f = malloc(sizeof(Flujo));
@@ -242,21 +230,33 @@ void imprime_conexiones(LNodo lista,char* conexion){
   for(; nuevo != NULL; nuevo = nuevo->sig){
     if(strcmp(nuevo->conex,conexion) == 0){
       
-      //~ if(nuevo->cor == NULL){
-        //~ printf("no se encontro adyacencia");
-        //~ exit(1);
-      //~ }
-      
       TipCor aris = nuevo->cor;
       for(;aris !=NULL; aris = aris->siguiente){
         printf("\n%s esta conectado con :%s\t",conexion,aris->destino->conex);
         printf("y su capacidad es de %d",aris->capacidadMax);
-        //printf(" %d\n",aris->costo);
+        
       }
       printf("\n");
     }
   }
 }
+
+// -----------------------Funciones-------------------------------------
+//~ contador: LNodo -> int
+//~ la funcion contador toma una lista de tipo LNodo y nos devuelve la cantidad 
+//~ de elementos que posee la lista.
+int contador(LNodo list){
+  int cont = 0;
+  LNodo lis = list;
+  for(;lis != NULL; lis = lis->sig){
+    cont++;
+  }
+  return cont;
+} 
+
+//~ minimo_elem: int*-> cant
+//~ dado un arreglo de enteros y la cantidad de elemento que posee dicho arreglo,
+//~ nos devuelve el menor elemento que se encuentra en el arreglo hasta el momento.
 
 int minimo_elem(int* arreglo,int cant){
   int minimo = arreglo[0];
@@ -272,24 +272,23 @@ int minimo_elem(int* arreglo,int cant){
   return minimo;
 }
 
-int min(LNodo lista){
+int max(LNodo lista){
   TipCor corrientes = lista->cor;
-  int menor = corrientes->capacidadMax;
+  int mayor = corrientes->capacidadMax;
   for(;corrientes!= NULL; corrientes = corrientes->siguiente){
-    if((corrientes->capacidadMax > menor) && (corrientes->capacidadMax != 0)) {
+    if((corrientes->capacidadMax > mayor) && (corrientes->capacidadMax != 0)) {
       //printf("\nel nodo mas chico es: %d",corrientes->capacidadMax);
-      menor = corrientes->capacidadMax;
+      mayor = corrientes->capacidadMax;
     }
   }
-  if(menor == 0) return -1;
-  return menor;
+  return mayor;
 }
 ///INCOMPLETA
 int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
   //printf("\n\nnodo inicial es: %s",lista->conex);
-  int minimo = min(lista);
+  int minimo = max(lista);
   int flujo = 0;
-  if(minimo == -1){
+  if(minimo == 0){
     //printf("\n no tiene mas nodos con capacidad");
     lista->cerrado = 1;
     return -1;
@@ -351,7 +350,7 @@ int flujo_Max(LNodo lista,TFlujo flu,int* capacidades,int iter){
 
   if((lista->fuente == 1) && (flujo != -1)){
     //printf("\n\nLLEGAMOS AL NODO INICIAL");
-    imprime_conexiones(lista,"1");
+    //imprime_conexiones(lista,"1");
     flujo = flujo_Max(lista,flu,capacidades,0);
   }
 
@@ -371,13 +370,14 @@ int main()
 
   nuevo = toma_datos("fuentes.txt",nuevo);
   //nuevo = crea_corriente(nuevo,"1","2",5);
-  //printf("\n%s",nuevo->cor->destino->conex);
-  imprime_nodos(nuevo);
+  //~ imprime_nodos(nuevo);
   //~ nuevo = crea_corriente(nuevo,"1","2",5);
   //~ nuevo = crea_corriente(nuevo,"1","3",5);
-  imprime_conexiones(nuevo,"1");
-  imprime_conexiones(nuevo,"3");
-  int arreglo[10];
+  //~ imprime_conexiones(nuevo,"1");
+  //~ imprime_conexiones(nuevo,"3");
+  int cant = contador(nuevo); //guardamos en cant la cantidad de elementos
+//                            de la lista hasta el momento
+  int arreglo[cant];
   LNodo conexiones = nuevo;
   for(;conexiones != NULL ; conexiones = conexiones->sig){
     if(conexiones->fuente == 1){
