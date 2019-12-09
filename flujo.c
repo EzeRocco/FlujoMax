@@ -51,7 +51,6 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
   corr->capacidadMax = corr->capacidadOriginal; //guardaremos lo mismo que esta en corr->capacidadOriginal ya que los dos
 //                                                empezaran con la misma capacidad
   corr->capEnv = 0;
-  corr->siguiente = NULL;
   //ahora guardaremos la conexion en el nodo correspondiente
   LNodo list = lista;
   for(;((list != NULL) && (strcmp(list->conex, origen) != 0)); list = list->sig);
@@ -65,9 +64,8 @@ LNodo crea_corriente(LNodo lista, void* origen, void* llegada, int cap){
     }
       
     TipCor current = list->cor;
-    for(;current->siguiente != NULL;current = current->siguiente);
-    current->siguiente = corr;
-    return lista;
+    corr->siguiente = current;
+    current = corr;
   }
   return lista;
 }
