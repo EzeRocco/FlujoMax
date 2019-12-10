@@ -1,0 +1,13 @@
+Fuente
+hola
+Sumidero
+chau
+Puntos Intermedios
+juan,pedro,gabi
+Conexiones
+hola,juan,1
+hola,pedro,1
+juan,pedro,2
+pedro,juan,2
+juan,gabi,1
+gabi,chau,1
