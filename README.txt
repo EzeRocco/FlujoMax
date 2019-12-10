@@ -30,3 +30,11 @@ correspondiente me resulta facil al igual tambien con el trabajo de bactracking.
 *el universo que se brinde debera tener (al igual que el ejemplo de comunidades) las identificaciones corres-
 pondientes con la primera letra en mayuscula,ejemplo:Fuente,Sumidero,Puntos Intermedios,Conexiones.Las conexiones
 deberan estar separadas por comas y sin espacios en blancos.
+*La manera de recorrer los nodos es:
+ --Primero desde el primer nodo accedemos a la adyacencia con mas capacidad
+hasta el momento y recorreremos los nodos con la misma metodologia y guardaremos 
+esas capacidades en el arrego de enteros que pasamos como argumento.
+ --Cuando se llega al final se busca la MENOR capacidad del arreglo y lo guardaremos
+provisoriamente en flujoTotal y minimizador (ambos de TFlujo),tambien devolveremos
+este minimizador.
+ --la funcion terminara cuando se encuentre en el nodo fuente y no tenga mas capacidad. 
